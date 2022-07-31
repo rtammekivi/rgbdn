@@ -1,0 +1,48 @@
+---
+- hosts: all
+  become: false
+  gather_facts: false
+
+  vars:
+    deploy_dir: /home/pi/rgbdn
+
+  tasks:
+    - name: Install pip
+      package:
+        name: python3-pip
+      become: true
+
+    - name: Copy binaries
+      ansible.posix.synchronize:
+        src: ./
+        dest: "{{ deploy_dir }}"
+      notify: Restart service
+
+    - name: Install pip packages
+      ansible.builtin.pip:
+        requirements: "{{ deploy_dir }}/requirements.txt"
+
+    - name: Install service file
+      copy:
+        src: "{{ deploy_dir }}/rgbdn.service"
+        dest: ~/.config/systemd/user/rgbdn.service
+        remote_src: true
+      register: copy
+      tags: service
+      notify: Restart service
+
+    - name: Enable and start service
+      systemd:
+        daemon_reload: "{{ copy.changed }}"
+        name: rgbdn
+        enabled: true
+        scope: user
+        state: started
+      tags: service
+
+  handlers:
+    - name: Restart service
+      systemd:
+        name: rgbdn
+        scope: user
+        state: restarted

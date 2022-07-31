@@ -1,0 +1,11 @@
+[Unit]
+Description=RGB day/night
+After=bluetooth.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 -u /home/pi/rgbdn/rgbdn.py
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
