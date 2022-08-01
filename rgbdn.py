@@ -4,7 +4,7 @@ import asyncio
 import subprocess
 from astral.geocoder import database, lookup
 from astral.sun import sun
-from bleak import BleakClient
+from bleak import BleakClient, BleakScanner
 from datetime import datetime, timezone
 
 address = "C6:70:45:7F:CB:F0"
@@ -70,6 +70,10 @@ async def write_brightness(client: BleakClient, brightness: int):
 
 
 async def connect(client: BleakClient):
+    devices = await BleakScanner.discover()
+    for device in devices:
+        print(f"Found device {device}")
+
     print(f"Connecting to device {client.address}")
     await client.connect()
     if (client.is_connected):
