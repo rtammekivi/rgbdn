@@ -29,8 +29,8 @@ def create_wrgb_command(red: int, green: int, blue: int) -> bytearray:
 
 
 BRIGHTNESS_DAY = 0
-BRIGHTNESS_DUSK = 127
-BRIGHTNESS_NIGHT = 255
+BRIGHTNESS_DUSK = 30
+BRIGHTNESS_NIGHT = 90
 
 
 def get_brightness() -> int:
