@@ -1,5 +1,6 @@
 ---
-- hosts: all
+- name: Deploy rgbdn
+  hosts: all
   become: false
   gather_facts: false
 
@@ -8,7 +9,7 @@
 
   tasks:
     - name: Install pip
-      package:
+      ansible.builtin.package:
         name: python3-pip
       become: true
 
@@ -21,18 +22,22 @@
     - name: Install pip packages
       ansible.builtin.pip:
         requirements: "{{ deploy_dir }}/requirements.txt"
+      tags: teee
 
     - name: Install service file
-      copy:
+      ansible.builtin.copy:
         src: "{{ deploy_dir }}/rgbdn.service"
         dest: ~/.config/systemd/user/rgbdn.service
         remote_src: true
+        mode: "0644"
+        owner: pi
+        group: pi
       register: copy
       tags: service
       notify: Restart service
 
     - name: Enable and start service
-      systemd:
+      ansible.builtin.systemd:
         daemon_reload: "{{ copy.changed }}"
         name: rgbdn
         enabled: true
@@ -42,7 +47,7 @@
 
   handlers:
     - name: Restart service
-      systemd:
+      ansible.builtin.systemd:
         name: rgbdn
         scope: user
         state: restarted
