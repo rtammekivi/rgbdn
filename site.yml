@@ -19,9 +19,10 @@
         dest: "{{ deploy_dir }}"
       notify: Restart service
 
-    - name: Install pip packages
+    - name: Install pip packages # noqa: package-latest - we want latest and greatest
       ansible.builtin.pip:
         requirements: "{{ deploy_dir }}/requirements.txt"
+        state: latest
       tags: teee
 
     - name: Install service file
